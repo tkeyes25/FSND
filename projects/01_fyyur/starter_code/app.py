@@ -40,8 +40,13 @@ class Venue(db.Model):
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
-
+    # implement any missing fields, as a database migration using Flask-Migrate
+    seeking_talent = db.Column(db.Boolean)
+    seeking_description = db.Column(db.String(500))
+    upcoming_shows_count = db.Column(db.Integer)
+    upcoming_shows = db.Column(db.Integer, db.ForeignKey('Show.id'), nullable=False)
+    past_shows_count = db.Column(db.Integer)
+    past_shows = db.Column(db.Integer, db.ForeignKey('Show.id'), nullable=False)
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
@@ -58,6 +63,15 @@ class Artist(db.Model):
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+
+class Show(db.Model):
+    __tablename__ = 'Show'
+
+    id = db.Column(db.Integer, primary_key=True)
+    start_time = db.Column(db.DateTime)
+    artist_name = db.Column(db.String(120))
+    venue_name = db.Column(db.String(120))
+
 
 #----------------------------------------------------------------------------#
 # Filters.

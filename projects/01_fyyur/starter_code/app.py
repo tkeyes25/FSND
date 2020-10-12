@@ -69,8 +69,8 @@ class Show(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     start_time = db.Column(db.DateTime)
-    artist_name = db.Column(db.String(120))
-    venue_name = db.Column(db.String(120))
+    artist_id = db.Column(db.Integer)
+    venue_id = db.Column(db.Integer)
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -234,7 +234,7 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
-  # TODO: insert form data as a new Venue record in the db, instead
+  # insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
   try:
     data = request.form.to_dict()
@@ -523,13 +523,10 @@ def create_shows():
 @app.route('/shows/create', methods=['POST'])
 def create_show_submission():
   # called to create new shows in the db, upon submitting new show listing form
-  # TODO: insert form data as a new Show record in the db, instead
+  # insert form data as a new Show record in the db, instead
   try:
-    artist_id = request.form['artist_id']
-    venue_id = request.form['venue_id']
-    start_time = request.form['start_time']
-    print(db.Query(Artist).get(artist_id))
-    show = Show(artist_id=artist_id, venue_id=venue_id, start_time=start_time)
+    data = request.form.to_dict()
+    show = Show(artist_id=data['artist_id'], venue_id=data['venue_id'], start_time=data['start_time'])
     db.session.add(show)
     db.session.commit()
 
@@ -537,7 +534,7 @@ def create_show_submission():
     flash('Show was successfully listed!')
 
   except():
-    # TODO: on unsuccessful db insert, flash an error instead.
+    # on unsuccessful db insert, flash an error instead.
     # e.g., flash('An error occurred. Show could not be listed.')
     # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
     db.session.rollback()

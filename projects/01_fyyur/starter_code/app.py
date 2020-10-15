@@ -39,12 +39,15 @@ class Venue(db.Model):
     phone = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    website = db.Column(db.String(120))
     seeking_talent = db.Column(db.Boolean)
     seeking_description = db.Column(db.String(500))
+
+    # TODO: make nullable false
     upcoming_shows_count = db.Column(db.Integer)
-    upcoming_shows = db.Column(db.Integer, db.ForeignKey('Show.id'), nullable=False)
+    upcoming_shows = db.Column(db.Integer, db.ForeignKey('Show.id'), nullable=True)
     past_shows_count = db.Column(db.Integer)
-    past_shows = db.Column(db.Integer, db.ForeignKey('Show.id'), nullable=False)
+    past_shows = db.Column(db.Integer, db.ForeignKey('Show.id'), nullable=True)
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
@@ -59,10 +62,12 @@ class Artist(db.Model):
     facebook_link = db.Column(db.String(120))
     seeking_venue = db.Column(db.Boolean)
     seeking_description = db.Column(db.String(500))
+
+    # TODO: make nullable false
     upcoming_shows_count = db.Column(db.Integer)
-    upcoming_shows = db.Column(db.Integer, db.ForeignKey('Show.id'), nullable=False)
+    upcoming_shows = db.Column(db.Integer, db.ForeignKey('Show.id'), nullable=True)
     past_shows_count = db.Column(db.Integer)
-    past_shows = db.Column(db.Integer, db.ForeignKey('Show.id'), nullable=False)
+    past_shows = db.Column(db.Integer, db.ForeignKey('Show.id'), nullable=True)
 
 class Show(db.Model):
     __tablename__ = 'Show'
@@ -240,7 +245,7 @@ def create_venue_form():
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
   # insert form data as a new Venue record in the db, instead
-  # TODO: modify data to be the data object returned from db insertion
+  # modify data to be the data object returned from db insertion
   try:
     data = request.form.to_dict()
     venue = Venue(name=data['name'], city=data['city'], state=data['state'], address=data['address'], phone=data['phone'], facebook_link=data['facebook_link'])
@@ -266,6 +271,15 @@ def create_venue_submission():
 def delete_venue(venue_id):
   # TODO: Complete this endpoint for taking a venue_id, and using
   # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
+
+  try:
+    venue = Venue.query.get(venue_id)
+    db.session.delete(venue)
+    db.session.commit()
+  except:
+    db.session.rollback()
+  finally:
+    db.session.close()
 
   # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
   # clicking that button delete it from the db then redirect the user to the homepage

@@ -42,9 +42,7 @@ class Venue(db.Model):
     website = db.Column(db.String(120))
     seeking_talent = db.Column(db.Boolean)
     seeking_description = db.Column(db.String(500))
-    upcoming_shows_count = db.Column(db.Integer)
     upcoming_shows = db.relationship("Show")
-    past_shows_count = db.Column(db.Integer)
     past_shows = db.relationship("Show")
 
 class Artist(db.Model):
@@ -60,9 +58,7 @@ class Artist(db.Model):
     facebook_link = db.Column(db.String(120))
     seeking_venue = db.Column(db.Boolean)
     seeking_description = db.Column(db.String(500))
-    upcoming_shows_count = db.Column(db.Integer)
     upcoming_shows = db.relationship("Show")
-    past_shows_count = db.Column(db.Integer)
     past_shows = db.relationship("Show")
 
 class Show(db.Model):

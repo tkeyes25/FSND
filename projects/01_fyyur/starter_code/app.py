@@ -8,6 +8,7 @@ import babel
 from flask import Flask, render_template, request, Response, flash, redirect, url_for, abort
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 import logging
 from logging import Formatter, FileHandler
 from flask_wtf import Form
@@ -74,6 +75,7 @@ class Show(db.Model):
 # Helper Functions.
 #----------------------------------------------------------------------------#
 
+# Calculate the upcoming and past shows for venue and artists
 def past_upcoming_shows(id, model):
   query_results = []
   previous = []
@@ -90,6 +92,7 @@ def past_upcoming_shows(id, model):
       upcoming.append(show)
   return previous, upcoming
 
+# Get shows for a venue or artist
 def get_shows_info(shows, model):
   for show in shows:
     if model == "venue":
@@ -101,6 +104,7 @@ def get_shows_info(shows, model):
       show.venue_name = venue.name
       show.venue_image_link = venue.image_link
 
+# For WTF BoolienField Form and saving to DB
 def boolean_field(bool_field):
   if bool_field == 'y':
     return True
@@ -150,17 +154,10 @@ def venues():
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
-  # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
-  # seach for Hop should return "The Musical Hop".
-  # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
-  response={
-    "count": 1,
-    "data": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar"
-    }]
-  }
-  return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
+  # search on artists with partial string search. Ensure it is case-insensitive.
+  search = request.form.get('search_term', '').lower()
+  response = Venue.query.filter(func.lower(Venue.name).like('%' + search + '%')).all()
+  return render_template('pages/search_venues.html', results=response, search_term=search)
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
@@ -244,15 +241,9 @@ def search_artists():
   # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
   # seach for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild Sax Band".
   # search for "band" should return "The Wild Sax Band".
-  response={
-    "count": 1,
-    "data": [{
-      "id": 4,
-      "name": "Guns N Petals",
-      "num_upcoming_shows": 0,
-    }]
-  }
-  return render_template('pages/search_artists.html', results=response, search_term=request.form.get('search_term', ''))
+  search = request.form.get('search_term', '').lower()
+  response = Artist.query.filter(func.lower(Artist.name).like('%' + search + '%')).all()
+  return render_template('pages/search_artists.html', results=response, search_term=search)
 
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):

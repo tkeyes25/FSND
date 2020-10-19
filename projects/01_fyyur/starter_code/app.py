@@ -188,7 +188,7 @@ def create_venue_submission():
   # modify data to be the data object returned from db insertion
   try:
     data = request.form.to_dict()
-    venue = Venue(name=data['name'], city=data['city'], state=data['state'], address=data['address'], phone=data['phone'], image_link=data['image_link'], facebook_link=data['facebook_link'], website=data['website'], seeking_talent=data['seeking_talent'], seeking_description=data['seeking_description'])
+    venue = Venue(name=data['name'], city=data['city'], state=data['state'], address=data['address'], phone=data['phone'], genres=data['genres'], image_link=data['image_link'], facebook_link=data['facebook_link'], website=data['website'], seeking_talent=data['seeking_talent'], seeking_description=data['seeking_description'])
     venue.seeking_talent = boolean_field(venue.seeking_talent)
     db.session.add(venue)
     db.session.commit()
@@ -305,12 +305,13 @@ def edit_venue_submission(venue_id):
   try:
     venue = Artist.query.get(venue_id)
     data = request.form.to_dict()
-    result = Venue(name=data['name'], city=data['city'], state=data['state'], address=data['address'], phone=data['phone'], image_link=data['image_link'], facebook_link=data['facebook_link'], website=data['website'], seeking_talent=data['seeking_talent'], seeking_description=data['seeking_description'])
+    result = Venue(name=data['name'], city=data['city'], state=data['state'], address=data['address'], phone=data['phone'], genres=data['genres'], image_link=data['image_link'], facebook_link=data['facebook_link'], website=data['website'], seeking_talent=data['seeking_talent'], seeking_description=data['seeking_description'])
     venue.name = result.name
     venue.city = result.city
     venue.state = result.state
     venue.phone = result.phone
     venue.address = result.address
+    venue.genres = result.genres
     venue.image_link = result.image_link
     venue.facebook_link = result.facebook_link
     venue.website = result.website

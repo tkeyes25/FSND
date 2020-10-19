@@ -56,6 +56,7 @@ class Artist(db.Model):
     genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    website = db.Column(db.String(120))
     seeking_venue = db.Column(db.Boolean)
     seeking_description = db.Column(db.String(500))
     upcoming_shows = db.relationship("Show")
@@ -99,6 +100,12 @@ def get_shows_info(shows, model):
       venue = Venue.query.get(show.venue_id)
       show.venue_name = venue.name
       show.venue_image_link = venue.image_link
+
+def boolean_field(bool_field):
+  if bool_field == 'y':
+    return True
+  else:
+    return False
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -183,20 +190,21 @@ def create_venue_submission():
   # modify data to be the data object returned from db insertion
   try:
     data = request.form.to_dict()
-    venue = Venue(name=data['name'], city=data['city'], state=data['state'], address=data['address'], phone=data['phone'], facebook_link=data['facebook_link'])
+    venue = Venue(name=data['name'], city=data['city'], state=data['state'], address=data['address'], phone=data['phone'], image_link=data['image_link'], facebook_link=data['facebook_link'], website=data['website'], seeking_talent=data['seeking_talent'], seeking_description=data['seeking_description'])
+    venue.seeking_talent = boolean_field(venue.seeking_talent)
     db.session.add(venue)
     db.session.commit()
 
     # on successful db insert, flash success
-    flash('Artist ' + request.form['name'] + ' was successfully listed!')
+    flash('Venue ' + request.form['name'] + ' was successfully listed!')
 
-  except:
+  except Exception as e:
     # on unsuccessful db insert, flash an error instead.
     # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
     # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
     db.session.rollback()
-    flash('An error occurred. Artist ' + data['name'] + ' could not be listed.')
-
+    flash('An error occurred. Venue ' + data['name'] + ' could not be listed.')
+    print(e)
   finally:
     db.session.close()
 
@@ -326,7 +334,8 @@ def create_artist_submission():
   # called upon submitting the new artist listing form
   try:
     data = request.form.to_dict()
-    artist = Artist(name=data['name'], city=data['city'], state=data['state'], phone=data['phone'], genres=data['genres'], facebook_link=data['facebook_link'])
+    artist = Artist(name=data['name'], city=data['city'], state=data['state'], phone=data['phone'], genres=data['genres'], image_link=data['image_link'], facebook_link=data['facebook_link'], website=data['website'], seeking_venue=data['seeking_venue'], seeking_description=data['seeking_description'])
+    artist.seeking_venue = boolean_field(artist.seeking_venue)
     db.session.add(artist)
     db.session.commit()
 

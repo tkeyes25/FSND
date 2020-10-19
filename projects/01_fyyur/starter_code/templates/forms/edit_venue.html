@@ -42,7 +42,11 @@
       {{ form.facebook_link(class_ = 'form-control', placeholder='http://', id=form.facebook, autofocus = true) }}
     </div>
     <div class="form-group">
-      <label for="seeking_venue">Seeking Venue</label>
+      <label for="web">Website</label>
+      {{ form.website(class_ = 'form-control', placeholder='http://', id=form.web, autofocus = true) }}
+    </div>
+    <div class="form-group">
+      <label for="seeking_venue">Seeking Talent</label>
       {{ form.seeking_talent(class_ = 'form-check', autofocus = true) }}
     </div>
     <div class="form-group">

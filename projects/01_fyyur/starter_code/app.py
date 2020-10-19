@@ -42,7 +42,7 @@ class Venue(db.Model):
     state = db.Column(db.String(120))
     address = db.Column(db.String(120))
     phone = db.Column(db.String(120))
-    genres = db.Column(db.String(120))
+    genres = db.Column(db.ARRAY(db.String(120)))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     website = db.Column(db.String(120))
@@ -59,7 +59,7 @@ class Artist(db.Model):
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     phone = db.Column(db.String(120))
-    genres = db.Column(db.String(120))
+    genres = db.Column(db.ARRAY(db.String(120)))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     website = db.Column(db.String(120))
@@ -192,6 +192,7 @@ def create_venue_submission():
   # modify data to be the data object returned from db insertion
   try:
     data = request.form.to_dict()
+    data['genres'] = request.form.getlist('genres')
     if "seeking_talent" in data:
       venue = Venue(name=data['name'], city=data['city'], state=data['state'], address=data['address'], phone=data['phone'], genres=data['genres'], image_link=data['image_link'], facebook_link=data['facebook_link'], website=data['website'], seeking_talent=data['seeking_talent'], seeking_description=data['seeking_description'])
       venue.seeking_talent = boolean_field(venue.seeking_talent)

@@ -344,6 +344,7 @@ def create_artist_submission():
   # called upon submitting the new artist listing form
   try:
     data = request.form.to_dict()
+    data['genres'] = request.form.getlist('genres')
     if "seeking_talent" in data:
       artist = Artist(name=data['name'], city=data['city'], state=data['state'], phone=data['phone'], genres=data['genres'], image_link=data['image_link'], facebook_link=data['facebook_link'], website=data['website'], seeking_venue=data['seeking_venue'], seeking_description=data['seeking_description'])
       artist.seeking_venue = boolean_field(artist.seeking_venue)

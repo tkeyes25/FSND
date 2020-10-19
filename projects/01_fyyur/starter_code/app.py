@@ -143,17 +143,30 @@ def index():
 
 @app.route('/venues')
 def venues():
-  result = Venue.query.all()
+  venues = Venue.query.all()
   data = []
-  for venue in result:
-    data.append({
-      "city": venue.city, 
-      "state": venue.state, 
-      "venues": [{
+  areas = []
+  result = []
+
+  # get distinct groupings of city, state
+  for venue in venues:
+    if (venue.city, venue.state) not in areas:
+      areas.append((venue.city, venue.state))
+  
+  # query for venues in areas, append results to data object
+  for area in areas:
+    venues = Venue.query.filter_by(city=area[0], state=area[1]).all()
+    result = {
+      "city": area[0], 
+      "state": area[1],
+      "venues": []
+    }
+    for venue in venues:
+      result['venues'].append({
         "id": venue.id,
         "name": venue.name
-      }]
-     })
+      })
+    data.append(result)
 
   return render_template('pages/venues.html', areas=data);
 

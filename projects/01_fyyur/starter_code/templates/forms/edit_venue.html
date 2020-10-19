@@ -7,10 +7,13 @@
         title="Back to homepage"><i class="fa fa-home pull-right"></i></a></h3>
     <div class="form-group">
       <label for="name">Name</label>
+      <p>{{venue.name}}</p>
       {{ form.name(class_ = 'form-control', autofocus = true) }}
     </div>
     <div class="form-group">
       <label>City & State</label>
+      <p>{{venue.city}}</p>
+      <p>{{venue.state}}</p>
       <div class="form-inline">
         <div class="form-group">
           {{ form.city(class_ = 'form-control', placeholder='City', autofocus = true) }}
@@ -22,35 +25,43 @@
     </div>
     <div class="form-group">
       <label for="address">Address</label>
+      <p>{{venue.address}}</p>
       {{ form.address(class_ = 'form-control', autofocus = true) }}
     </div>
     <div class="form-group">
       <label for="phone">Phone</label>
+      <p>{{venue.phone}}</p>
       {{ form.phone(class_ = 'form-control', placeholder='xxx-xxx-xxxx', autofocus = true) }}
     </div>
     <div class="form-group">
       <label for="genre">Genres</label>
       <small>Ctrl+Click to select multiple</small>
+      <p>{{venue.genres}}</p>
       {{ form.genres(class_ = 'form-control', placeholder='Genres, separated by commas', id=form.genre, autofocus = true) }}
     </div>
     <div class="form-group">
       <label for="image">Image Link</label>
+      <p>{{venue.image_link}}</p>
       {{ form.image_link(class_ = 'form-control', placeholder='http://', id=form.image, autofocus = true) }}
     </div>
     <div class="form-group">
       <label for="facebook">Facebook Link</label>
+      <p>{{venue.facebook_link}}</p>
       {{ form.facebook_link(class_ = 'form-control', placeholder='http://', id=form.facebook, autofocus = true) }}
     </div>
     <div class="form-group">
       <label for="web">Website</label>
+      <p>{{venue.website}}</p>
       {{ form.website(class_ = 'form-control', placeholder='http://', id=form.web, autofocus = true) }}
     </div>
     <div class="form-group">
       <label for="seeking_venue">Seeking Talent</label>
+      <p>{{venue.seeking_talent}}</p>
       {{ form.seeking_talent(class_ = 'form-check', autofocus = true) }}
     </div>
     <div class="form-group">
       <label for="seeking_description">Seeking Description</label>
+      <p>{{venue.seeking_description}}</p>
       {{ form.seeking_description(class_ = 'form-control', autofocus = true) }}
     </div>
     <input type="submit" value="Edit Venue" class="btn btn-primary btn-lg btn-block">

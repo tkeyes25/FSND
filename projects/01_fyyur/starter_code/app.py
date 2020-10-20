@@ -81,15 +81,10 @@ class Show(db.Model):
 #----------------------------------------------------------------------------#
 
 # Calculate the upcoming and past shows for venue and artists
-def past_upcoming_shows(id, model):
-  query_results = []
+def past_upcoming_shows(model_shows, model):
   previous = []
   upcoming = []
-  if model == "venue":
-    query_results = Show.query.filter_by(venue_id=id).all()
-  elif model == "artist":
-    query_results = Show.query.filter_by(artist_id=id).all()
-  for show in query_results:
+  for show in model_shows:
     show_time = datetime.strptime(show.start_time, '%Y-%m-%d %H:%M:%S')
     if show_time < datetime.now():
       previous.append(show)
@@ -181,7 +176,8 @@ def search_venues():
 def show_venue(venue_id):
   # shows the venue page with the given venue_id
   data = Venue.query.get(venue_id)
-  past, upcoming = past_upcoming_shows(venue_id, "venue")
+  venue_shows = Show.query.join(Venue)
+  past, upcoming = past_upcoming_shows(venue_shows, "venue")
   data.past_shows = past
   data.past_shows_count = len(past)
   data.upcoming_shows = upcoming
@@ -269,7 +265,8 @@ def search_artists():
 def show_artist(artist_id):
   # shows the artist page with the given artist_id
   data = Artist.query.get(artist_id)
-  past, upcoming = past_upcoming_shows(artist_id, "artist")
+  artist_shows = Show.query.join(Artist)
+  past, upcoming = past_upcoming_shows(artist_shows, "artist")
   data.past_shows = past
   data.past_shows_count = len(past)
   data.upcoming_shows = upcoming

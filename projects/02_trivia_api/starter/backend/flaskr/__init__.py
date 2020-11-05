@@ -99,7 +99,7 @@ def create_app(test_config=None):
     finally:
       db.session.close()
     if error:
-      abort(500)
+      abort(400)
     return "Deleted question with id: " + str(question.id)
 
   '''
@@ -126,7 +126,7 @@ def create_app(test_config=None):
     finally:
       db.session.close()
     if error:
-      abort(500)
+      abort(400)
     return "Question created with id: " + str(question.id)
 
   '''
@@ -157,7 +157,6 @@ def create_app(test_config=None):
   categories in the left column will cause only questions of that 
   category to be shown. 
   '''
-
   @app.route('/categories/<int:id>/questions', methods=['GET'])
   def get_questions_by_category(id):
     try:
@@ -187,11 +186,32 @@ def create_app(test_config=None):
   '''
 
   '''
-  @TODO: 
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
-  
+  @app.errorhandler(404)
+  def not_found(error):
+    return jsonify({
+      "success": False, 
+      "error": 404,
+      "message": "Not found"
+    }), 404
   return app
 
-    
+  @app.errorhandler(422)
+  def not_found(error):
+    return jsonify({
+      "success": False, 
+      "error": 422,
+      "message": "Unprocessable"
+    }), 422
+  return app
+
+  @app.errorhandler(500)
+  def not_found(error):
+    return jsonify({
+      "success": False, 
+      "error": 500,
+      "message": "Server error"
+    }), 500
+  return app

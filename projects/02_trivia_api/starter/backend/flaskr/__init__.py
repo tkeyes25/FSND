@@ -1,5 +1,6 @@
 import os
 from flask import Flask, request, abort, jsonify
+from sqlalchemy import func
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
@@ -94,6 +95,7 @@ def create_app(test_config=None):
       db.session.commit()
     except:
       error = True
+      db.session.rollback()
     finally:
       db.session.close()
     if error:
@@ -110,6 +112,22 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.  
   '''
+  @app.route('/questions', methods=['POST'])
+  def create_question():
+    error = False
+    try:
+      data = request.get_json()
+      question = Question(question=data['question'], answer=data['answer'], category=data['category'], difficulty=data['difficulty'])
+      db.session.add(question)
+      db.session.commit()
+    except:
+      error = True
+      db.session.rollback()
+    finally:
+      db.session.close()
+    if error:
+      abort(500)
+    return "Question created with id: " + str(question.id)
 
   '''
   @TODO: 
@@ -121,9 +139,18 @@ def create_app(test_config=None):
   only question that include that string within their question. 
   Try using the word "title" to start. 
   '''
+  @app.route('/questions', methods=['POST'])
+  def search_questions():
+    try:
+      search = request.get_json()
+      print(search)
+      response = Question.query.filter(func.lower(Question.name).like('%' + search + '%')).all()
+      print(response)
+    except:
+      abort(400)
+    return "results"
 
   '''
-  @TODO: 
   Create a GET endpoint to get questions based on category. 
 
   TEST: In the "List" tab / main screen, clicking on one of the 
@@ -131,6 +158,21 @@ def create_app(test_config=None):
   category to be shown. 
   '''
 
+  @app.route('/categories/<int:id>/questions', methods=['GET'])
+  def get_questions_by_category(id):
+    try:
+      category = Category.query.get(id)
+      qs = Question.query.filter_by(category=category.id).all()
+      pageQs = paginate_questions(request, qs)
+      categories = [cat.type for cat in Category.query.all()]
+      return jsonify({
+        'success': True,
+        'questions': pageQs,
+        'total_questions': len(qs),
+        'current_category': category.id
+      })
+    except:
+      abort(400)
 
   '''
   @TODO: 

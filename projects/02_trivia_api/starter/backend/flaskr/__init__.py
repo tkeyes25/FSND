@@ -8,25 +8,48 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+def paginate_questions(request, selection):
+  page = request.args.get('page', 1, type=int)
+  start = (page - 1) * QUESTIONS_PER_PAGE
+  end = start + QUESTIONS_PER_PAGE
+  questions = [question.format() for question in selection]
+  current_qs = questions[start:end]
+  return current_qs
+
 def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
   setup_db(app)
   
   '''
-  @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
+  Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
   '''
+  cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
   '''
-  @TODO: Use the after_request decorator to set Access-Control-Allow
+  Use the after_request decorator to set Access-Control-Allow
   '''
+  @app.after_request
+  def after_request(response):
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
+    return response
 
   '''
-  @TODO: 
   Create an endpoint to handle GET requests 
   for all available categories.
   '''
-
+  @app.route('/categories')
+  def get_categories():
+    try:
+      result = Category.query.all()
+      categories = [category.type for category in result]
+      return jsonify({
+        'success': True,
+        'categories': categories
+      })
+    except Exception as e:
+      abort(400)
 
   '''
   @TODO: 
@@ -40,6 +63,25 @@ def create_app(test_config=None):
   ten questions per page and pagination at the bottom of the screen for three pages.
   Clicking on the page numbers should update the questions. 
   '''
+  @app.route('/questions', methods=['GET'])
+  def get_questions():
+    try:
+      qs = Question.query.all()
+      pageQs = paginate_questions(request, qs)
+      if len(pageQs) == 0:
+        raise
+      
+      categories = [cat.type for cat in Category.query.all()]
+      
+      return jsonify({
+        'success': True,
+        'questions': pageQs,
+        'total_questions': len(qs),
+        'categories': categories,
+        'current_category': []
+      })
+    except:
+      abort(400)
 
   '''
   @TODO: 

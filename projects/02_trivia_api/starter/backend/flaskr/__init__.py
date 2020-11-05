@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
 
-from models import setup_db, Question, Category
+from models import setup_db, Question, Category, db
 
 QUESTIONS_PER_PAGE = 10
 
@@ -68,11 +68,7 @@ def create_app(test_config=None):
     try:
       qs = Question.query.all()
       pageQs = paginate_questions(request, qs)
-      if len(pageQs) == 0:
-        raise
-      
       categories = [cat.type for cat in Category.query.all()]
-      
       return jsonify({
         'success': True,
         'questions': pageQs,
@@ -84,12 +80,25 @@ def create_app(test_config=None):
       abort(400)
 
   '''
-  @TODO: 
   Create an endpoint to DELETE question using a question ID. 
 
   TEST: When you click the trash icon next to a question, the question will be removed.
   This removal will persist in the database and when you refresh the page. 
   '''
+  @app.route('/questions/<int:id>', methods=['DELETE'])
+  def delete_question(id):
+    error = False
+    try:
+      question = Question.query.get(id)
+      db.session.delete(question)
+      db.session.commit()
+    except:
+      error = True
+    finally:
+      db.session.close()
+    if error:
+      abort(500)
+    return "Deleted question with id: " + str(question.id)
 
   '''
   @TODO: 

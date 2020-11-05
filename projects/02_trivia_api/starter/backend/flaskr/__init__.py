@@ -53,7 +53,6 @@ def create_app(test_config=None):
       abort(400)
 
   '''
-  @TODO: 
   Create an endpoint to handle GET requests for questions, 
   including pagination (every 10 questions). 
   This endpoint should return a list of questions, 
@@ -75,7 +74,7 @@ def create_app(test_config=None):
         'questions': pageQs,
         'total_questions': len(qs),
         'categories': categories,
-        'current_category': []
+        'current_category': None
       })
     except:
       abort(400)
@@ -103,7 +102,6 @@ def create_app(test_config=None):
     return "Deleted question with id: " + str(question.id)
 
   '''
-  @TODO: 
   Create an endpoint to POST a new question, 
   which will require the question and answer text, 
   category, and difficulty score.
@@ -117,7 +115,8 @@ def create_app(test_config=None):
     error = False
     try:
       data = request.get_json()
-      question = Question(question=data['question'], answer=data['answer'], category=data['category'], difficulty=data['difficulty'])
+      category = int(data['category']) + 1 # bug with id indexing (categories DB start with 1, frontend start with 0)
+      question = Question(question=data['question'], answer=data['answer'], category=category, difficulty=data['difficulty'])
       db.session.add(question)
       db.session.commit()
     except:
@@ -160,7 +159,7 @@ def create_app(test_config=None):
   @app.route('/categories/<int:id>/questions', methods=['GET'])
   def get_questions_by_category(id):
     try:
-      category = Category.query.get(id)
+      category = Category.query.get(id+1) # bug with id indexing (categories DB start with 1, frontend start with 0)
       qs = Question.query.filter_by(category=category.id).all()
       pageQs = paginate_questions(request, qs)
       categories = [cat.type for cat in Category.query.all()]

@@ -187,7 +187,6 @@ def create_app(test_config=None):
       abort(400)
 
   '''
-  @TODO: 
   Create a POST endpoint to get questions to play the quiz. 
   This endpoint should take category and previous question parameters 
   and return a random questions within the given category, 
@@ -230,7 +229,7 @@ def create_app(test_config=None):
 
   '''
   Create error handlers for all expected errors 
-  including 404 and 422. 
+  including 400, 404, 422, and 500. 
   '''
   @app.errorhandler(400)
   def bad_request(error):

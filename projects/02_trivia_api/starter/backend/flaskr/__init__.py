@@ -197,13 +197,43 @@ def create_app(test_config=None):
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not. 
   '''
+  @app.route('/quizzes', methods=['POST'])
+  def play_quiz():
+    try:
+      data = request.get_json()
+      previous_qs = data['previous_questions']
+
+      if data['quiz_category']:
+        category = int(data['quiz_category']['id']) + 1 # bug with id indexing (categories DB start with 1, frontend start with 0)
+        questions = Question.query.filter_by(category=category).all()
+      else:
+        questions = Question.query.all()
+
+      # get random question not already asked
+      rand_question = questions[random.randint(0, len(questions)-1)]
+      while rand_question.id in previous_qs:
+        if len(previous_qs) == len(questions):
+          rand_question = None
+          break
+        rand_question = questions[random.randint(0, len(questions)-1)]
+      
+      # can't format 'None' type
+      if rand_question:
+        rand_question = rand_question.format()
+
+    except Exception as e:
+      abort(400)
+    return jsonify({
+      'success': True,
+      'question': rand_question,
+    })
 
   '''
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
   @app.errorhandler(400)
-  def not_found(error):
+  def bad_request(error):
     return jsonify({
       "success": False, 
       "error": 400,
@@ -221,7 +251,7 @@ def create_app(test_config=None):
   return app
 
   @app.errorhandler(422)
-  def not_found(error):
+  def unprocessable(error):
     return jsonify({
       "success": False, 
       "error": 422,
@@ -230,7 +260,7 @@ def create_app(test_config=None):
   return app
 
   @app.errorhandler(500)
-  def not_found(error):
+  def server_error(error):
     return jsonify({
       "success": False, 
       "error": 500,

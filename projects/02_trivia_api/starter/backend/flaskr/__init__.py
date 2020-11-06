@@ -108,28 +108,8 @@ def create_app(test_config=None):
 
   TEST: When you submit a question on the "Add" tab, 
   the form will clear and the question will appear at the end of the last page
-  of the questions list in the "List" tab.  
-  '''
-  @app.route('/questions', methods=['POST'])
-  def create_question():
-    error = False
-    try:
-      data = request.get_json()
-      category = int(data['category']) + 1 # bug with id indexing (categories DB start with 1, frontend start with 0)
-      question = Question(question=data['question'], answer=data['answer'], category=category, difficulty=data['difficulty'])
-      db.session.add(question)
-      db.session.commit()
-    except:
-      error = True
-      db.session.rollback()
-    finally:
-      db.session.close()
-    if error:
-      abort(400)
-    return "Question created with id: " + str(question.id)
+  of the questions list in the "List" tab.
 
-  '''
-  @TODO: 
   Create a POST endpoint to get questions based on a search term. 
   It should return any questions for whom the search term 
   is a substring of the question. 
@@ -138,6 +118,40 @@ def create_app(test_config=None):
   only question that include that string within their question. 
   Try using the word "title" to start. 
   '''
+  @app.route('/questions', methods=['POST'])
+  def create_question():
+    error = False
+    try:
+      data = request.get_json()
+
+      if data['searchTerm']:
+        search = data['searchTerm']
+        response = Question.query.filter(func.lower(Question.question).like('%' + search + '%')).all()
+        pageQs = paginate_questions(request, response)
+      else:
+        category = int(data['category']) + 1 # bug with id indexing (categories DB start with 1, frontend start with 0)
+        question = Question(question=data['question'], answer=data['answer'], category=category, difficulty=data['difficulty'])
+        db.session.add(question)
+        db.session.commit()
+    except Exception as e:
+      error = True
+      db.session.rollback()
+    finally:
+      db.session.close()
+      
+    if error:
+      abort(400)
+
+    if search:
+      return jsonify({
+        'success': True,
+        'questions': pageQs,
+        'total_questions': len(response),
+        'currentCategory': None
+      })
+    else: 
+      return "Question created with id: " + str(question.id)
+
   @app.route('/questions', methods=['POST'])
   def search_questions():
     try:

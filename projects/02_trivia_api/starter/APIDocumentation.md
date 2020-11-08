@@ -14,15 +14,29 @@ To get started, you will need to visit the [frontend README](frontend/README.md)
   - There are no API keys or authentications necessary to utilize the APIs.
 
 ## Error Codes
+
+- Response Body
+
+```json
+{
+  "success": Boolean,
+  "error": Integer,
+  "message": String
+}
+```
+
 - 400
   - Message: "Bad request"
   - type: json
+
 - 404
   - Message: "Not found"
   - type: json
+
 - 422
   - Message: "Unprocessable"
   - type: json
+
 - 500
   - Message: "Server error"
   - type: json

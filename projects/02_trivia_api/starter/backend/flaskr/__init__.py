@@ -9,6 +9,9 @@ from models import setup_db, Question, Category, db
 
 QUESTIONS_PER_PAGE = 10
 
+# generate page of questions
+# request -- request body 
+# selection -- all questions
 def paginate_questions(request, selection):
   page = request.args.get('page', 1, type=int)
   start = (page - 1) * QUESTIONS_PER_PAGE
@@ -77,7 +80,7 @@ def create_app(test_config=None):
         'current_category': None
       })
     except:
-      abort(400)
+      abort(404)
 
   '''
   Create an endpoint to DELETE question using a question ID. 
@@ -98,7 +101,7 @@ def create_app(test_config=None):
     finally:
       db.session.close()
     if error:
-      abort(400)
+      abort(422)
     return "Deleted question with id: " + str(question.id)
 
   '''
@@ -124,6 +127,7 @@ def create_app(test_config=None):
     try:
       data = request.get_json()
 
+      # check for searchTerm request vs adding new question
       if data['searchTerm']:
         search = data['searchTerm']
         response = Question.query.filter(func.lower(Question.question).like('%' + search + '%')).all()
@@ -140,7 +144,7 @@ def create_app(test_config=None):
       db.session.close()
       
     if error:
-      abort(400)
+      abort(422)
 
     if search:
       return jsonify({
@@ -151,17 +155,6 @@ def create_app(test_config=None):
       })
     else: 
       return "Question created with id: " + str(question.id)
-
-  @app.route('/questions', methods=['POST'])
-  def search_questions():
-    try:
-      search = request.get_json()
-      print(search)
-      response = Question.query.filter(func.lower(Question.name).like('%' + search + '%')).all()
-      print(response)
-    except:
-      abort(400)
-    return "results"
 
   '''
   Create a GET endpoint to get questions based on category. 
@@ -184,7 +177,7 @@ def create_app(test_config=None):
         'current_category': category.id
       })
     except:
-      abort(400)
+      abort(404)
 
   '''
   Create a POST endpoint to get questions to play the quiz. 
@@ -202,6 +195,7 @@ def create_app(test_config=None):
       data = request.get_json()
       previous_qs = data['previous_questions']
 
+      # gather all questions or questions within category
       if data['quiz_category']:
         category = int(data['quiz_category']['id']) + 1 # bug with id indexing (categories DB start with 1, frontend start with 0)
         questions = Question.query.filter_by(category=category).all()
@@ -220,7 +214,7 @@ def create_app(test_config=None):
       if rand_question:
         rand_question = rand_question.format()
 
-    except Exception as e:
+    except:
       abort(400)
     return jsonify({
       'success': True,
@@ -238,7 +232,6 @@ def create_app(test_config=None):
       "error": 400,
       "message": "Bad request"
     }), 400
-  return app
 
   @app.errorhandler(404)
   def not_found(error):
@@ -247,7 +240,6 @@ def create_app(test_config=None):
       "error": 404,
       "message": "Not found"
     }), 404
-  return app
 
   @app.errorhandler(422)
   def unprocessable(error):
@@ -256,7 +248,6 @@ def create_app(test_config=None):
       "error": 422,
       "message": "Unprocessable"
     }), 422
-  return app
 
   @app.errorhandler(500)
   def server_error(error):
@@ -265,4 +256,5 @@ def create_app(test_config=None):
       "error": 500,
       "message": "Server error"
     }), 500
+
   return app

@@ -77,11 +77,11 @@ class TriviaTestCase(unittest.TestCase):
         self.assertFalse(data['success'])
         self.assertEqual(data['message'], "Unprocessable")
 
-    # def test_create_new_question(self):
-    #     res = self.client().post('/questions', data=json.dumps(self.new_question), headers={'Content-Type': 'application/json'})
-    #     data = json.loads(res.data)
-    #     self.assertEqual(res.status_code, 200)
-    #     self.assertTrue(data['success'])
+    def test_create_new_question(self):
+        res = self.client().post('/questions', json=self.new_question)
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['success'])
 
     # def test_search_response(self):
     #     res = self.client().post('/questions', data=json.dumps({'searchTerm': 'Title'}), headers={'Content-Type': 'application/json'})

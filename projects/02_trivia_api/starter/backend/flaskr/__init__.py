@@ -90,18 +90,15 @@ def create_app(test_config=None):
   '''
   @app.route('/questions/<int:id>', methods=['DELETE'])
   def delete_question(id):
-    error = False
     try:
       question = Question.query.get(id)
       db.session.delete(question)
       db.session.commit()
     except:
-      error = True
+      abort(422)
       db.session.rollback()
     finally:
       db.session.close()
-    if error:
-      abort(422)
     return "Deleted question with id: " + str(question.id)
 
   '''
@@ -123,38 +120,36 @@ def create_app(test_config=None):
   '''
   @app.route('/questions', methods=['POST'])
   def create_question():
-    error = False
     try:
       data = request.get_json()
 
       # check for searchTerm request vs adding new question
-      if data['searchTerm']:
-        search = data['searchTerm']
+      if data.get('searchTerm'):
+        search = data.get('searchTerm')
         response = Question.query.filter(func.lower(Question.question).like('%' + search + '%')).all()
         pageQs = paginate_questions(request, response)
+        return jsonify({
+          'success': True,
+          'questions': pageQs,
+          'total_questions': len(response),
+          'currentCategory': None
+        })
+
       else:
-        category = int(data['category']) + 1 # bug with id indexing (categories DB start with 1, frontend start with 0)
-        question = Question(question=data['question'], answer=data['answer'], category=category, difficulty=data['difficulty'])
+        category = int(data.get('category')) + 1 # bug with id indexing (categories DB start with 1, frontend start with 0)
+        question = Question(question=data.get('question'), answer=data.get('answer'), category=category, difficulty=data.get('difficulty'))
         db.session.add(question)
         db.session.commit()
-    except Exception as e:
-      error = True
+        return jsonify({
+          'success': True,
+          'question_id': question.id
+        })
+
+    except:
+      abort(422)
       db.session.rollback()
     finally:
       db.session.close()
-      
-    if error:
-      abort(422)
-
-    if search:
-      return jsonify({
-        'success': True,
-        'questions': pageQs,
-        'total_questions': len(response),
-        'currentCategory': None
-      })
-    else: 
-      return "Question created with id: " + str(question.id)
 
   '''
   Create a GET endpoint to get questions based on category. 
@@ -213,13 +208,14 @@ def create_app(test_config=None):
       # can't format 'None' type
       if rand_question:
         rand_question = rand_question.format()
+      
+      return jsonify({
+        'success': True,
+        'question': rand_question,
+      })
 
     except:
       abort(400)
-    return jsonify({
-      'success': True,
-      'question': rand_question,
-    })
 
   '''
   Create error handlers for all expected errors 

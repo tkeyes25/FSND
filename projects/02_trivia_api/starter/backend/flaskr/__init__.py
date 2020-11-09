@@ -94,12 +94,15 @@ def create_app(test_config=None):
       question = Question.query.get(id)
       db.session.delete(question)
       db.session.commit()
+      return jsonify({
+        'success': True,
+        'question_id': question.id
+      })
     except:
       abort(422)
       db.session.rollback()
     finally:
       db.session.close()
-    return "Deleted question with id: " + str(question.id)
 
   '''
   Create an endpoint to POST a new question, 
@@ -188,11 +191,11 @@ def create_app(test_config=None):
   def play_quiz():
     try:
       data = request.get_json()
-      previous_qs = data['previous_questions']
+      previous_qs = data.get('previous_questions')
 
       # gather all questions or questions within category
-      if data['quiz_category']:
-        category = int(data['quiz_category']['id']) + 1 # bug with id indexing (categories DB start with 1, frontend start with 0)
+      if data.get('quiz_category'):
+        category = int(data.get('quiz_category').id) + 1 # bug with id indexing (categories DB start with 1, frontend start with 0)
         questions = Question.query.filter_by(category=category).all()
       else:
         questions = Question.query.all()
@@ -213,7 +216,6 @@ def create_app(test_config=None):
         'success': True,
         'question': rand_question,
       })
-
     except:
       abort(400)
 

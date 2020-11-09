@@ -100,13 +100,28 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['total_questions'])
         self.assertTrue(data['current_category'])
     
-    # def test_playing_quiz(self):
-    #     question = {"previous_questions": []}
-    #     res = self.client().post('/quizzes', data=json.dumps(question), headers={'Content-Type': 'application/json'})
-    #     data = json.loads(res.data)
-    #     self.assertEqual(res.status_code, 200)
-    #     self.assertTrue(data['success'])
-    #     self.assertTrue(data['question'])
+    def test_playing_quiz(self):
+        question = {"previous_questions": []}
+        res = self.client().post('/quizzes', json=question)
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['success'])
+        self.assertTrue(data['question'])
+    
+    def test_playing_quiz_with_category(self):
+        question = {
+            "previous_questions": [], 
+            "quiz_category": {
+                "id": 0,
+                "type": "Science"
+            }
+        }
+        res = self.client().post('/quizzes', json=question)
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['success'])
+        self.assertTrue(data['question'])
+        self.assertEqual(data['question']['category']-1, question['quiz_category']['id']) # GUI needs to start at 1
 
 # Make the tests conveniently executable
 if __name__ == "__main__":

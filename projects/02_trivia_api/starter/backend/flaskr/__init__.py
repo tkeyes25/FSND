@@ -195,7 +195,7 @@ def create_app(test_config=None):
 
       # gather all questions or questions within category
       if data.get('quiz_category'):
-        category = int(data.get('quiz_category').id) + 1 # bug with id indexing (categories DB start with 1, frontend start with 0)
+        category = int(data.get('quiz_category').get('id')) + 1 # bug with id indexing (categories DB start with 1, frontend start with 0)
         questions = Question.query.filter_by(category=category).all()
       else:
         questions = Question.query.all()

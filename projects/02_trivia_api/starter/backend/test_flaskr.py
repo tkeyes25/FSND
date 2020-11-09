@@ -37,18 +37,8 @@ class TriviaTestCase(unittest.TestCase):
         pass
 
     """
-    TODO
     Write at least one test for each test for successful operation and for expected errors.
     """
-    def test_get_paginated_questions(self):
-        res = self.client().get('/questions')
-        data = json.loads(res.data)
-        self.assertEqual(res.status_code, 200)
-        self.assertTrue(data['success'])
-        self.assertTrue(data['total_questions'])
-        self.assertTrue(len(data['questions']))
-        self.assertTrue(data['categories'])
-    
     def test_get_categories(self):
         res = self.client().get('/categories')
         data = json.loads(res.data)
@@ -76,6 +66,15 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 422)
         self.assertFalse(data['success'])
         self.assertEqual(data['message'], "Unprocessable")
+    
+    def test_get_paginated_questions(self):
+        res = self.client().get('/questions')
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['success'])
+        self.assertTrue(data['total_questions'])
+        self.assertTrue(len(data['questions']))
+        self.assertTrue(data['categories'])
 
     def test_create_new_question(self):
         res = self.client().post('/questions', json=self.new_question)

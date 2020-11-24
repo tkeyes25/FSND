@@ -41,7 +41,10 @@ def get_drinks(payload):
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
-
+@app.route('/drinks-detail', methods=['GET'])
+@requires_auth('get:drinks-detail')
+def get_drinks_detail(payload):
+    return "yo"
 
 '''
 @TODO implement endpoint
@@ -52,7 +55,10 @@ def get_drinks(payload):
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
-
+@app.route('/drinks', methods=['POST'])
+@requires_auth('post:drinks')
+def get_drinks(payload):
+    return "yo"
 
 '''
 @TODO implement endpoint
@@ -65,7 +71,10 @@ def get_drinks(payload):
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
-
+@app.route('/drinks/<int:id>', methods=['PATCH'])
+@requires_auth('patch:drinks')
+def get_drinks(payload, id):
+    return "yo"
 
 '''
 @TODO implement endpoint
@@ -77,7 +86,10 @@ def get_drinks(payload):
     returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
-
+@app.route('/drinks/<int:id>', methods=['DELETE'])
+@requires_auth('get:drinks')
+def get_drinks(payload, id):
+    return "yo"
 
 ## Error Handling
 '''
@@ -107,23 +119,23 @@ implement error handler for 404
     error handler should conform to general task above 
 '''
 
-@app.errorhandler(404)
-def unprocessable(error):
-    return jsonify({
-        "success": False, 
-        "error": 404,
-        "message": "resource not found"
-    }), 404
+# @app.errorhandler(404)
+# def unprocessable(error):
+#     return jsonify({
+#         "success": False, 
+#         "error": 404,
+#         "message": "resource not found"
+#     }), 404
 
-'''
-implement error handler for AuthError
-    error handler should conform to general task above 
-'''
+# '''
+# implement error handler for AuthError
+#     error handler should conform to general task above 
+# '''
 
-@app.errorhandler(AuthError)
-def unauthorized(error):
-    return jsonify({
-        "success": False, 
-        "error": 401,
-        "message": "unauthorized"
-    }), 401
+# @app.errorhandler(AuthError)
+# def unauthorized(error):
+#     return jsonify({
+#         "success": False, 
+#         "error": 401,
+#         "message": "unauthorized"
+#     }), 401

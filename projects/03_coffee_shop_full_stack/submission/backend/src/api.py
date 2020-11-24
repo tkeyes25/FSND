@@ -7,12 +7,13 @@ from flask_cors import CORS
 from .database.models import db_drop_and_create_all, setup_db, Drink
 from .auth.auth import AuthError, requires_auth
 
+
 app = Flask(__name__)
 setup_db(app)
 CORS(app)
 
 '''
-@TODO uncomment the following line to initialize the datbase
+@TODO uncomment the following line to initialize the database
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 '''
@@ -27,7 +28,10 @@ CORS(app)
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
-
+@app.route('/drinks', methods=['GET'])
+@requires_auth('get:drinks')
+def get_drinks(payload):
+    return "yo"
 
 '''
 @TODO implement endpoint
@@ -88,7 +92,7 @@ def unprocessable(error):
                     }), 422
 
 '''
-@TODO implement error handlers using the @app.errorhandler(error) decorator
+implement error handlers using the @app.errorhandler(error) decorator
     each error handler should return (with approprate messages):
              jsonify({
                     "success": False, 
@@ -99,12 +103,27 @@ def unprocessable(error):
 '''
 
 '''
-@TODO implement error handler for 404
+implement error handler for 404
     error handler should conform to general task above 
 '''
 
+@app.errorhandler(404)
+def unprocessable(error):
+    return jsonify({
+        "success": False, 
+        "error": 404,
+        "message": "resource not found"
+    }), 404
 
 '''
-@TODO implement error handler for AuthError
+implement error handler for AuthError
     error handler should conform to general task above 
 '''
+
+@app.errorhandler(AuthError)
+def unauthorized(error):
+    return jsonify({
+        "success": False, 
+        "error": 401,
+        "message": "unauthorized"
+    }), 401

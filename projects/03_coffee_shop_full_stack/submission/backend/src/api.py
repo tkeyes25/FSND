@@ -80,11 +80,11 @@ def create_drink(payload):
         recipe = data.get('recipe', None)
         drink = Drink(title=title, recipe=json.dumps(recipe))
         drink.insert()
-        drinks = Drink.query.filter(Drink.title == title).one_or_none()
-        drinks = drinks.long()
+        drink = Drink.query.filter(Drink.title == title).one_or_none()
+        drink = drink.long()
         return jsonify({
             'success': True,
-            'drinks': drinks
+            'drinks': drink
         })
     except:
         abort(400)
@@ -103,14 +103,17 @@ def create_drink(payload):
 @requires_auth('patch:drinks')
 def edit_drink(payload, id):
     try:
+        data = request.get_json()
         drink = Drink.query.get(id)
-        # drink.update()
+        drink.title = data.get('title', None)
+        drink.recipe = json.dumps(data.get('recipe', None))
+        drink.update()
+        drink = [drink.long()]
         return jsonify({
             "success": True,
             "drinks": drink
         })
-    except Exception as e:
-        print(e)
+    except:
         abort(404)
 '''
 @TODO implement endpoint

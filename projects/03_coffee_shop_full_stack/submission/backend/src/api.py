@@ -29,8 +29,7 @@ CORS(app)
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks', methods=['GET'])
-@requires_auth('get:drinks')
-def get_drinks(payload):
+def get_drinks():
     try:
         drinks = []
         for drink in Drink.query.all():

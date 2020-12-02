@@ -13,7 +13,7 @@ setup_db(app)
 CORS(app)
 
 '''
-@TODO uncomment the following line to initialize the database
+uncomment the following line to initialize the database
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 '''
@@ -21,7 +21,6 @@ CORS(app)
 
 ## ROUTES
 '''
-@TODO implement endpoint
     GET /drinks
         it should be a public endpoint
         it should contain only the drink.short() data representation
@@ -39,7 +38,7 @@ def get_drinks():
             "drinks": drinks
         })
     except:
-        abort(400)
+        abort(404)
 
 '''
     GET /drinks-detail
@@ -60,7 +59,7 @@ def get_drinks_detail(payload):
             "drinks": drinks
         })
     except:
-        abort(400)
+        abort(404)
 
 '''
     POST /drinks
@@ -86,7 +85,7 @@ def create_drink(payload):
             'drinks': drink
         })
     except:
-        abort(400)
+        abort(422)
 '''
     PATCH /drinks/<id>
         where <id> is the existing model id
@@ -112,7 +111,7 @@ def edit_drink(payload, id):
             "drinks": drink
         })
     except:
-        abort(404)
+        abort(422)
 '''
     DELETE /drinks/<id>
         where <id> is the existing model id
@@ -133,7 +132,7 @@ def delete_drink(payload, id):
             "drinks": id
         })
     except:
-        abort(404)
+        abort(422)
 
 ## Error Handling
 '''
@@ -163,23 +162,23 @@ implement error handler for 404
     error handler should conform to general task above 
 '''
 
-# @app.errorhandler(404)
-# def unprocessable(error):
-#     return jsonify({
-#         "success": False, 
-#         "error": 404,
-#         "message": "resource not found"
-#     }), 404
+@app.errorhandler(404)
+def unprocessable(error):
+    return jsonify({
+        "success": False, 
+        "error": 404,
+        "message": "resource not found"
+    }), 404
 
-# '''
-# implement error handler for AuthError
-#     error handler should conform to general task above 
-# '''
+'''
+implement error handler for AuthError
+    error handler should conform to general task above 
+'''
 
-# @app.errorhandler(AuthError)
-# def unauthorized(error):
-#     return jsonify({
-#         "success": False, 
-#         "error": 401,
-#         "message": "unauthorized"
-#     }), 401
+@app.errorhandler(AuthError)
+def unauthorized(error):
+    return jsonify({
+        "success": False, 
+        "error": 401,
+        "message": "unauthorized"
+    }), 401

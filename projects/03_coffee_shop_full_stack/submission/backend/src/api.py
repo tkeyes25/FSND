@@ -89,7 +89,6 @@ def create_drink(payload):
     except:
         abort(400)
 '''
-@TODO implement endpoint
     PATCH /drinks/<id>
         where <id> is the existing model id
         it should respond with a 404 error if <id> is not found
@@ -116,7 +115,6 @@ def edit_drink(payload, id):
     except:
         abort(404)
 '''
-@TODO implement endpoint
     DELETE /drinks/<id>
         where <id> is the existing model id
         it should respond with a 404 error if <id> is not found
@@ -126,17 +124,16 @@ def edit_drink(payload, id):
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks/<int:id>', methods=['DELETE'])
-@requires_auth('get:drinks')
+@requires_auth('delete:drinks')
 def delete_drink(payload, id):
     try:
         drink = Drink.query.get(id)
-        # drink.delete()
+        drink.delete()
         return jsonify({
             "success": True,
-            "drinks": drink
+            "drinks": id
         })
-    except Exception as e:
-        print(e)
+    except:
         abort(404)
 
 ## Error Handling

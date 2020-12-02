@@ -88,8 +88,12 @@ class Drink(db.Model):
             drink.delete()
     '''
     def delete(self):
-        db.session.delete(self)
-        db.session.commit()
+        try:
+            db.session.delete(self)
+            db.session.commit()
+        except Exception as e:
+            db.rollback()
+            raise
 
     '''
     update()

@@ -51,7 +51,6 @@ def get_token_auth_header():
             'description': 'Incorrect authorization token type'
         }, 401)
     
-    print(header_parts[1])
     return header_parts[1]
 
 '''

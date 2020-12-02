@@ -31,10 +31,18 @@ CORS(app)
 @app.route('/drinks', methods=['GET'])
 @requires_auth('get:drinks')
 def get_drinks(payload):
-    return "yo"
+    try:
+        drinks = []
+        for drink in Drink.query.all():
+            drinks.append(drink.short())
+        return jsonify({
+            "success": True,
+            "drinks": drinks
+        })
+    except:
+        abort(400)
 
 '''
-@TODO implement endpoint
     GET /drinks-detail
         it should require the 'get:drinks-detail' permission
         it should contain the drink.long() data representation
@@ -44,10 +52,18 @@ def get_drinks(payload):
 @app.route('/drinks-detail', methods=['GET'])
 @requires_auth('get:drinks-detail')
 def get_drinks_detail(payload):
-    return "yo"
+    try:
+        drinks = []
+        for drink in Drink.query.all():
+            drinks.append(drink.long())
+        return jsonify({
+            "success": True,
+            "drinks": drinks
+        })
+    except:
+        abort(400)
 
 '''
-@TODO implement endpoint
     POST /drinks
         it should create a new row in the drinks table
         it should require the 'post:drinks' permission
@@ -57,9 +73,21 @@ def get_drinks_detail(payload):
 '''
 @app.route('/drinks', methods=['POST'])
 @requires_auth('post:drinks')
-def get_drinks(payload):
-    return "yo"
-
+def create_drink(payload):
+    try:
+        data = request.get_json()
+        title = data.get('title', None)
+        recipe = data.get('recipe', None)
+        drink = Drink(title=title, recipe=json.dumps(recipe))
+        drink.insert()
+        drinks = Drink.query.filter(Drink.title == title).one_or_none()
+        drinks = drinks.long()
+        return jsonify({
+            'success': True,
+            'drinks': drinks
+        })
+    except:
+        abort(400)
 '''
 @TODO implement endpoint
     PATCH /drinks/<id>
@@ -73,9 +101,17 @@ def get_drinks(payload):
 '''
 @app.route('/drinks/<int:id>', methods=['PATCH'])
 @requires_auth('patch:drinks')
-def get_drinks(payload, id):
-    return "yo"
-
+def edit_drink(payload, id):
+    try:
+        drink = Drink.query.get(id)
+        # drink.update()
+        return jsonify({
+            "success": True,
+            "drinks": drink
+        })
+    except Exception as e:
+        print(e)
+        abort(404)
 '''
 @TODO implement endpoint
     DELETE /drinks/<id>
@@ -88,8 +124,17 @@ def get_drinks(payload, id):
 '''
 @app.route('/drinks/<int:id>', methods=['DELETE'])
 @requires_auth('get:drinks')
-def get_drinks(payload, id):
-    return "yo"
+def delete_drink(payload, id):
+    try:
+        drink = Drink.query.get(id)
+        # drink.delete()
+        return jsonify({
+            "success": True,
+            "drinks": drink
+        })
+    except Exception as e:
+        print(e)
+        abort(404)
 
 ## Error Handling
 '''
@@ -98,10 +143,10 @@ Example error handling for unprocessable entity
 @app.errorhandler(422)
 def unprocessable(error):
     return jsonify({
-                    "success": False, 
-                    "error": 422,
-                    "message": "unprocessable"
-                    }), 422
+        "success": False, 
+        "error": 422,
+        "message": "unprocessable"
+    }), 422
 
 '''
 implement error handlers using the @app.errorhandler(error) decorator

@@ -10,7 +10,7 @@ from .auth.auth import AuthError, requires_auth
 
 app = Flask(__name__)
 setup_db(app)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app)
 
 '''
 uncomment the following line to initialize the database
@@ -35,12 +35,12 @@ def get_drinks():
     try:
         drinks = []
         for drink in Drink.query.all():
-            drinks.append(drink.short())
+            drinks.append(drink.long())
         return jsonify({
             "success": True,
             "drinks": drinks
         })
-    except Exception as E:
+    except Exception as e:
         abort(404)
 
 
